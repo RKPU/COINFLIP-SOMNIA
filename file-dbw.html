@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Coin-Flip Game – Somnia Testnet</title>
+  <link rel="stylesheet" href="style.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+</head>
+<body>
+  <h1>🪙 Coin-Flip on Somnia Testnet</h1>
+
+  <p>Contract balance: <span id="balance">…</span> STT</p>
+
+  <label>Your bet (STT):
+    <input id="bet" type="number" min="0.001" max="1" step="0.001" value="0.01"/>
+  </label>
+
+  <label>Choose:
+    <select id="guess">
+      <option value="true">Heads</option>
+      <option value="false">Tails</option>
+    </select>
+  </label>
+
+  <button id="flipBtn">Flip Coin</button>
+
+  <p id="result">Waiting for first flip…</p>
+
+<script src="app.js"></script>
+</body>
+</html>

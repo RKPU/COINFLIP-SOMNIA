@@ -1,0 +1,43 @@
+// ===== CONFIG (replace with your own) =====
+const CONTRACT_ADDRESS = "0x7D003bb42DDa51e8480CF646FAC669Ecb7683C0f";
+// ===========================================
+
+const RPC_URL = "https://testnet.somnia.technology/rpc";   // free public RPC
+const CHAIN_ID = 50312;                                    // Somnia testnet
+
+// Load ABI (fetched from abi.json)
+let abi;
+fetch('abi.json').then(r => r.json()).then(a => { abi = a; start(); });
+
+async function start() {
+  // Connect MetaMask
+  if (!window.ethereum) return alert("Install MetaMask");
+  await window.ethereum.request({ method: "eth_requestAccounts" });
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  await provider.send("wallet_switchEthereumChain", [{ chainId: ethers.utils.hexValue(CHAIN_ID) }]).catch(()=>{});
+  const signer = provider.getSigner();
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, abi, signer);
+
+  // Show contract balance
+  updateBalance();
+  async function updateBalance() {
+    const bal = ethers.utils.formatEther(await provider.getBalance(CONTRACT_ADDRESS));
+    document.getElementById("balance").textContent = bal;
+  }
+
+  // Flip coin button
+  document.getElementById("flipBtn").addEventListener("click", async () => {
+    const bet = ethers.utils.parseEther(document.getElementById("bet").value);
+    const guess = document.getElementById("guess").value === "true";
+
+    try {
+      document.getElementById("result").textContent = "⏳ Waiting for tx…";
+      const tx = await contract.flipCoin(guess, { value: bet });
+      const receipt = await tx.wait();
+      document.getElementById("result").textContent = "✅ Flip completed! Check console for details.";
+      updateBalance();
+    } catch (err) {
+      document.getElementById("result").textContent = "❌ " + err.message.split("(")[0];
+    }
+  });
+}
